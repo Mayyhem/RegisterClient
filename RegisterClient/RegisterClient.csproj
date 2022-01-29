@@ -53,11 +53,11 @@
     <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Microsoft.ConfigurationManagement.Messaging">
-      <HintPath>.\Microsoft.ConfigurationManagement.Messaging.dll</HintPath>
+    <Reference Include="Microsoft.ConfigurationManagement.Messaging, Version=5.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.ConfigurationManagement.Messaging.5.2006.1037.1000\lib\net40\Microsoft.ConfigurationManagement.Messaging.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.ConfigurationManagement.Security.Cryptography">
-      <HintPath>.\Microsoft.ConfigurationManagement.Security.Cryptography.dll</HintPath>
+    <Reference Include="Microsoft.ConfigurationManagement.Security.Cryptography, Version=5.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.ConfigurationManagement.Messaging.5.2006.1037.1000\lib\net40\Microsoft.ConfigurationManagement.Security.Cryptography.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -74,6 +74,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
